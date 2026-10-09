@@ -1,0 +1,46 @@
+name: clinica-bem-viver
+
+services:
+  postgres:
+    image: postgres:17.11-alpine
+    environment:
+      POSTGRES_USER: bemviver
+      POSTGRES_PASSWORD: bemviver
+      POSTGRES_DB: bemviver
+    ports:
+      - "5433:5432"
+    # Os dados são recriados pelo seed a cada npm run dev, então não precisamos de volume
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "bemviver", "-h", "127.0.0.1"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Caixa de e-mail falsa para testar envios. Nada sai para a internet
+  mailpit:
+    image: axllent/mailpit:v1.31.1
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  # Só sobe com npm run n8n
+  n8n:
+    image: n8nio/n8n:2.40.3
+    profiles: ["n8n"]
+    environment:
+      GENERIC_TIMEZONE: America/Recife
+      TZ: America/Recife
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+    ports:
+      - "5678:5678"
+    # Permite que o n8n chame a api que roda fora do Docker em http://host.docker.internal:3333
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - n8n:/home/node/.n8n
+
+volumes:
+  n8n:

@@ -1,0 +1,33 @@
+{
+  "name": "clinica-bem-viver",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "docker compose up -d --wait && npm run db:preparar -w @bemviver/api && concurrently -k -n api,web -c blue,green \"npm run dev -w @bemviver/api\" \"npm run dev -w @bemviver/web\"",
+    "n8n": "docker compose --profile n8n up -d --wait",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "docker compose up -d --wait && npm run test --workspaces --if-present",
+    "studio": "npm run studio -w @bemviver/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.13.5",
+    "concurrently": "10.0.6",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.8",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0"
+  },
+  "overrides": {
+    "mysql2": "3.24.5",
+    "deepmerge-ts": "8.0.2"
+  }
+}

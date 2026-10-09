@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Perfil {
+  paciente
+  recepcao
+  profissional
+}
+
+enum TipoConsulta {
+  primeira
+  retorno
+}
+
+enum StatusConsulta {
+  agendada
+  cancelada
+  realizada
+  faltou
+}
+
+model Usuario {
+  id        String @id @default(uuid())
+  nome      String
+  email     String @unique
+  senhaHash String @map("senha_hash")
+  perfil    Perfil
+
+  profissional Profissional?
+  consultas    Consulta[]
+
+  @@map("usuarios")
+}
+
+// O id do profissional é o mesmo id do usuário dele
+model Profissional {
+  id            String @id
+  especialidade String
+
+  usuario   Usuario    @relation(fields: [id], references: [id])
+  consultas Consulta[]
+  folgas    Folga[]
+
+  @@map("profissionais")
+}
+
+// data e hora ficam no horário de Recife. inicio e fim guardam o instante exato.
+model Consulta {
+  id             String         @id @default(uuid())
+  profissionalId String         @map("profissional_id")
+  pacienteId     String         @map("paciente_id")
+  data           String
+  hora           String
+  inicio         DateTime       @db.Timestamptz(3)
+  fim            DateTime       @db.Timestamptz(3)
+  tipo           TipoConsulta
+  status         StatusConsulta @default(agendada)
+  criadaEm       DateTime       @default(now()) @map("criada_em") @db.Timestamptz(3)
+  canceladaEm    DateTime?      @map("cancelada_em") @db.Timestamptz(3)
+
+  profissional Profissional @relation(fields: [profissionalId], references: [id])
+  paciente     Usuario      @relation(fields: [pacienteId], references: [id])
+
+  @@index([profissionalId, data])
+  @@index([pacienteId])
+  @@map("consultas")
+}
+
+model Folga {
+  id             String   @id @default(uuid())
+  profissionalId String   @map("profissional_id")
+  data           String
+  criadaEm       DateTime @default(now()) @map("criada_em") @db.Timestamptz(3)
+
+  profissional Profissional @relation(fields: [profissionalId], references: [id])
+
+  @@unique([profissionalId, data])
+  @@map("folgas")
+}
