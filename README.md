@@ -187,7 +187,7 @@ Registre no `DECISOES.md` como você usou a IA, inclusive os pontos em que ela e
 
 ## 9. Prazo, dúvidas e avaliação
 
-O desafio começa na terça, 13/10, às 10h, e a entrega vai até quinta, 15/10, às 20h.
+O desafio começa na quarta, 14/10, às 10h, e a entrega vai até sexta, 16/10, às 18h.
 
 Mande as dúvidas pelo canal informado no e-mail. Se alguma regra parecer ambígua, você pode decidir, registrar a decisão no `DECISOES.md` e seguir em frente.
 
